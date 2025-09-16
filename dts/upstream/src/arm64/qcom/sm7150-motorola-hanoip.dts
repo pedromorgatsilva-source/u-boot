@@ -1,0 +1,62 @@
+// SPDX-License-Identifier: GPL-2.0-only
+
+/dts-v1/;
+
+#include "sm7150.dtsi"
+
+/delete-node/ &tz_mem;
+/delete-node/ &sec_cdsp_mem;
+
+/ {
+	model = "hanoip";
+	compatible = "motorola,hanoip", "qcom,sm7150";
+	chassis-type = "handset";
+
+	qcom,msm-id = <0x16d 0>;
+	qcom,board-id = <0x4c 0xb200>;
+
+	chosen {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		framebuffer@9c000000 {
+			compatible = "simple-framebuffer";
+			reg = <0x0 0x9c000000 0x0 (1080 * 2400 * 4)>;
+			width = <1080>;
+			height = <2400>;
+			stride = <(1080 * 4)>;
+			format = "a8r8g8b8";
+			clocks = <&gcc GCC_DISP_HF_AXI_CLK>,
+				 <&gcc GCC_DISP_SF_AXI_CLK>;
+		};
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		framebuffer_region@9c000000 {
+			reg = <0x0 0x9c000000 0x0 (1080 * 2400 * 4)>;
+			no-map;
+		};
+
+		/*
+		 * The rmtfs memory region in downstream is 'dynamically allocated'
+		 * but given the same address every time. Hard code it as this address is
+		 * where the modem firmware expects it to be.
+		 */
+		rmtfs_mem: memory@f2e01000 {
+			compatible = "qcom,rmtfs-mem";
+			reg = <0 0xfd201000 0 0x200000>;
+			no-map;
+
+			qcom,client-id = <1>;
+			qcom,vmid = <15>;
+		};
+	};
+};
+
+&tlmm {
+	gpio-reserved-ranges = <59 4>;
+};
