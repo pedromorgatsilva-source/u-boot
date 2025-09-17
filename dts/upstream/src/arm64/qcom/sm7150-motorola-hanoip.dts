@@ -26,8 +26,6 @@
 	};
 
 	chosen {
-		bootargs = "earlycon=tty0 console=tty0";
-
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
@@ -57,8 +55,6 @@
 			label = "Volume Up";
 			linux,code = <KEY_VOLUMEUP>;
 			gpios = <&pm6150l_gpios 2 GPIO_ACTIVE_LOW>;
-			linux,can-disable;
-			wakeup-source;
 			debounce-interval = <15>;
 		};
 	};
@@ -89,24 +85,12 @@
 	};
 };
 
+&pm6150_resin {
+	linux,code = <KEY_VOLUMEDOWN>;
+	status = "okay";
+};
+
 &pm6150l_gpios {
-	reg = <0xc000 0xc00>;
-	gpio-line-names = "NC", /* GPIO_1 */
-			  "KYPD_VOLP_N",
-			  "CAMW_LDO_EN",
-			  "NC",
-			  "NC",
-			  "NC",
-			  "SLB",
-			  "CAMT_LDO_EN",
-			  "LCD_RESET_N",
-			  "MOTOR_STEP_CLK", /* GPIO_10 */
-			  "CAMT_VCM_2P8_EN",
-			  "NC";
-
-	interrupts = <0x04 0xc0 0x00 0x00 0x04 0xc1 0x00 0x00 0x04 0xc2 0x00 0x00 0x04 0xc3 0x00 0x00 0x04 0xc4 0x00 0x00 0x04 0xc5 0x00 0x00 0x04 0xc6 0x00 0x00 0x04 0xc7 0x00 0x00 0x04 0xc8 0x00 0x00 0x04 0xc9 0x00 0x00 0x04 0xca 0x00 0x00 0x04 0xcb 0x00 0x00>;
-	interrupt-names = "pm6150l_gpio1", "pm6150l_gpio2", "pm6150l_gpio3", "pm6150l_gpio4", "pm6150l_gpio5", "pm6150l_gpio6", "pm6150l_gpio7", "pm6150l_gpio8", "pm6150l_gpio9", "pm6150l_gpio10", "pm6150l_gpio11", "pm6150l_gpio12";
-
 	vol_up_n: vol-up-n-state {
 		pins = "gpio2";
 		function = PMIC_GPIO_FUNC_NORMAL;
