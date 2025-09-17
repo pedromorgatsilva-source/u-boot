@@ -19,7 +19,10 @@
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-		framebuffer@9c000000 {
+
+		stdout-path = "framebuffer0";
+
+		framebuffer0: framebuffer@9c000000 {
 			compatible = "simple-framebuffer";
 			reg = <0x0 0x9c000000 0x0 (1080 * 2400 * 4)>;
 			width = <1080>;
@@ -28,6 +31,8 @@
 			format = "a8r8g8b8";
 			clocks = <&gcc GCC_DISP_HF_AXI_CLK>,
 				 <&gcc GCC_DISP_SF_AXI_CLK>;
+
+			status = "okay";
 		};
 	};
 
