@@ -3,6 +3,7 @@
 /dts-v1/;
 
 #include <dt-bindings/arm/qcom,ids.h>
+#include <dt-bindings/leds/common.h>
 #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
 #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
 #include <dt-bindings/gpio/gpio.h>
@@ -41,8 +42,7 @@
 			height = <2400>;
 			stride = <(1080 * 4)>;
 			format = "a8r8g8b8";
-			clocks = <&gcc GCC_DISP_HF_AXI_CLK>,
-				 <&gcc GCC_DISP_SF_AXI_CLK>;
+			clocks = <&gcc GCC_DISP_HF_AXI_CLK>;
 
 			status = "okay";
 		};
@@ -94,6 +94,28 @@
 			no-dump-oops;
 		};
 	};
+
+	vph_pwr: regulator-vph-pwr {
+		compatible = "regulator-fixed";
+
+		regulator-name = "vph_pwr";
+		regulator-min-microvolt = <3700000>;
+		regulator-max-microvolt = <3700000>;
+
+		regulator-always-on;
+		regulator-boot-on;
+	};
+
+	vreg_s3a_0p8: regulator-smpa3 {
+		compatible = "regulator-fixed";
+
+		regulator-name = "vreg_s3a_0p8";
+		regulator-min-microvolt = <800000>;
+		regulator-max-microvolt = <800000>;
+
+		regulator-always-on;
+		vin-supply = <&vph_pwr>;
+	};
 };
 
 &apps_rsc {
@@ -101,12 +123,41 @@
 		compatible = "qcom,pm6150-rpmh-regulators";
 		qcom,pmic-id = "a";
 
+		vdd-s1-supply = <&vph_pwr>;
+		vdd-s2-supply = <&vph_pwr>;
+		vdd-s3-supply = <&vph_pwr>;
+		vdd-s4-supply = <&vph_pwr>;
+		vdd-s5-supply = <&vph_pwr>;
+
+		vdd-l1-supply = <&vreg_s8c_1p2>;
+		vdd-l2-l3-supply = <&vreg_s4a_1p1>;
+		vdd-l4-l7-l8-supply = <&vreg_s4a_1p1>;
+		vdd-l5-l16-l17-l18-l19-supply = <&vreg_bob>;
+		vdd-l6-supply = <&vreg_s8c_1p2>;
+		vdd-l9-supply = <&vreg_s3a_0p8>;
+		vdd-l10-l14-l15-supply = <&vreg_s5a_2p0>;
+		vdd-l11-l12-l13-supply = <&vreg_s5a_2p0>;
+
+		vreg_s4a_1p1: smps4 {
+			regulator-name = "vreg_s4a_1p1";
+			regulator-min-microvolt = <824000>;
+			regulator-max-microvolt = <1120000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_s5a_2p0: smps5 {
+			regulator-name = "vreg_s5a_2p0";
+			regulator-min-microvolt = <1744000>;
+			regulator-max-microvolt = <2040000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
 		// Not connected
 		pm6150_l1: ldo1 {
 			regulator-name = "pm6150_l1";
 			regulator-min-microvolt = <1096000>;
 			regulator-max-microvolt = <1304000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_LPM>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 			regulator-allow-set-load;
 			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
 						   RPMH_REGULATOR_MODE_HPM>;
@@ -117,7 +168,7 @@
 			regulator-name = "pm6150_l2";
 			regulator-min-microvolt = <944000>;
 			regulator-max-microvolt = <1056000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_LPM>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 			regulator-allow-set-load;
 			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
 						   RPMH_REGULATOR_MODE_HPM>;
@@ -128,7 +179,7 @@
 			regulator-name = "pm6150_l3";
 			regulator-min-microvolt = <968000>;
 			regulator-max-microvolt = <1064000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_LPM>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 			regulator-allow-set-load;
 			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
 						   RPMH_REGULATOR_MODE_HPM>;
@@ -140,7 +191,7 @@
 			regulator-name = "pm6150_l4";
 			regulator-min-microvolt = <824000>;
 			regulator-max-microvolt = <920000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_LPM>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 			regulator-allow-set-load;
 			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
 						   RPMH_REGULATOR_MODE_HPM>;
@@ -151,7 +202,7 @@
 			regulator-name = "pm6150_l5";
 			regulator-min-microvolt = <2600000>;
 			regulator-max-microvolt = <2800000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_LPM>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 			regulator-allow-set-load;
 			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
 						   RPMH_REGULATOR_MODE_HPM>;
@@ -162,7 +213,7 @@
 			regulator-name = "pm6150_l6";
 			regulator-min-microvolt = <1096000>;
 			regulator-max-microvolt = <1304000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_LPM>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 			regulator-allow-set-load;
 			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
 						   RPMH_REGULATOR_MODE_HPM>;
@@ -173,7 +224,7 @@
 			regulator-name = "pm6150_l9";
 			regulator-min-microvolt = <624000>;
 			regulator-max-microvolt = <760000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_LPM>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 			regulator-allow-set-load;
 			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
 						   RPMH_REGULATOR_MODE_HPM>;
@@ -185,7 +236,7 @@
 			regulator-name = "pm6150_l10";
 			regulator-min-microvolt = <1720000>;
 			regulator-max-microvolt = <1832000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_LPM>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 			regulator-allow-set-load;
 			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
 						   RPMH_REGULATOR_MODE_HPM>;
@@ -284,6 +335,24 @@
 		compatible = "qcom,pm6150l-rpmh-regulators";
 		qcom,pmic-id = "c";
 
+		vdd-s1-supply = <&vph_pwr>;
+		vdd-s2-supply = <&vph_pwr>;
+		vdd-s3-supply = <&vph_pwr>;
+		vdd-s4-supply = <&vph_pwr>;
+		vdd-s5-supply = <&vph_pwr>;
+		vdd-s6-supply = <&vph_pwr>;
+		vdd-s7-supply = <&vph_pwr>;
+		vdd-s8-supply = <&vph_pwr>;
+
+		vdd-l2-l3-supply = <&vreg_s8c_1p2>;
+		vdd-l4-l5-l6-supply = <&vreg_bob>;
+		vdd-l7-l11-supply = <&vreg_bob>;
+		vdd-l9-l10-supply = <&vreg_bob>;
+
+		vdd-bob-supply = <&vph_pwr>;
+		vdd-flash-supply = <&vreg_bob>;
+		vdd-rgb-supply = <&vreg_bob>;
+
 		// Not connected
 		pm6150l_s1: smps1 {
 			regulator-name = "pm6150l_s1";
@@ -291,10 +360,12 @@
 			regulator-max-microvolt = <1200000>;
 		};
 
+		vreg_s8c_1p2:
 		pm6150l_s8: smps8 {
 			regulator-name = "pm6150l_s8";
 			regulator-min-microvolt = <1120000>;
 			regulator-max-microvolt = <1408000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
 		// To be connected to cam
@@ -308,6 +379,7 @@
 						   RPMH_REGULATOR_MODE_HPM>;
 		};
 
+		sdhc_2_vqmmc:
 		pm6150l_l6: ldo6 {
 			regulator-min-microvolt = <1648000>;
 			regulator-max-microvolt = <3100000>;
@@ -317,15 +389,49 @@
 						   RPMH_REGULATOR_MODE_HPM>;
 		};
 
+		vreg_l8c_1p8: ldo8 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1900000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		sdhc_2_vmmc:
 		pm6150l_l9: ldo9 {
 			regulator-min-microvolt = <2950000>;
-			regulator-max-microvolt = <3100000>;
+			regulator-max-microvolt = <3312000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 			regulator-allow-set-load;
 			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
 						   RPMH_REGULATOR_MODE_HPM>;
 		};
+
+		vreg_bob: bob {
+			regulator-name = "vreg_bob";
+			regulator-min-microvolt = <3296000>;
+			regulator-max-microvolt = <3960000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_AUTO>;
+			regulator-allow-bypass;
+		};
 	};
+};
+
+&cci0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&cci0_default>,
+		    <&cci1_default>,
+		    <&mclk3_active>;
+};
+
+&cci1 {
+	status = "okay";
+};
+
+&gpi_dma0 {
+	status = "okay";
+};
+
+&gpi_dma1 {
+	status = "okay";
 };
 
 &i2c0 {
@@ -349,6 +455,8 @@
 };
 
 &ufs_mem_hc {
+	reset-gpios = <&tlmm 119 GPIO_ACTIVE_LOW>;
+
 	vcc-supply = <&ufs_mem_hc_vcc>;
 	vcc-max-microamp = <600000>;
 	vccq2-supply = <&ufs_mem_hc_vccq2>;
@@ -408,6 +516,32 @@
 	status = "okay";
 };
 
+&pm6150_gpios {
+	gpio-line-names = "NC", /* GPIO_1 */
+			  "NC",
+			  "SMB_STAT",
+			  "NC",
+			  "SLB",
+			  "NC",
+			  "WCSS_PWR_REQ",
+			  "NC",
+			  "FORCED_USB_BOOT",
+			  "NC";  /* GPIO_10 */
+};
+
+&pm6150l_flash {
+	status = "okay";
+
+	led-1 {
+		function = LED_FUNCTION_FLASH;
+		color = <LED_COLOR_ID_WHITE>;
+		led-sources = <1>;
+		led-max-microamp = <150000>;
+		flash-max-microamp = <1000000>;
+		flash-max-timeout-us = <1280000>;
+	};
+};
+
 &pm6150l_gpios {
 	vol_up_n: vol-up-n-state {
 		pins = "gpio2";
@@ -458,24 +592,26 @@
 	status = "okay";
 };
 
+/*
 &sdhc_1 {
 
 	vmmc-supply = <&pm6150_l19>;
 	vqmmc-supply = <&sdhc_1_vqmmc>;
 
-	pinctrl-names = "active", "sleep";
+	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&sdc1_on>;
 	pinctrl-1 = <&sdc1_off>;
 
 	status = "okay";
 };
+*/
 
 &sdhc_2 {
 	cd-gpios = <&tlmm 69 GPIO_ACTIVE_HIGH>;
 	cd-inverted;
-
-	vmmc-supply = <&pm6150l_l9>;
-	vqmmc-supply = <&pm6150l_l6>;
+	
+	vmmc-supply = <&sdhc_2_vmmc>;
+	vqmmc-supply = <&sdhc_2_vqmmc>;
 
 	pinctrl-names = "active", "sleep";
 	pinctrl-0 = <&sdc2_on>;
@@ -486,6 +622,13 @@
 
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <59 4>, <83 2>;
+
+	mclk3_active: mclk3-active {
+		pins = "gpio16";
+		function = "cam_mclk";
+		drive-strength = <2>;
+		bias-disable;
+	};
 
 	sdc1_on: sdc1-on-state {
 		clk-pins {
